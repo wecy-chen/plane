@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/main.css" type="text/css">
+    <script src="js/tool.js"></script>
+    <script src="js/Plan.js"></script>
+    <script src="js/Bullet.js"></script>
+    <script src="js/Enemy.js"></script>
+    <script src="js/Power.js"></script>
+
+    <script>
+        window.onload = function () {
+            var plan = new Plan();
+            Power.prototype.plan = plan;
+            var enemysObj = creatEnemy();
+            var bulletArr = startGame(plan,enemysObj)
+
+        }
+        function creatEnemy() {
+            var enemysObj = {enemy1: [], enemy2: [], enemy3: []};
+            for (var i = 0; i < 20; i++) {
+                var enemy1 = new Enemy(1);
+                enemysObj.enemy1.push(enemy1);
+                if (i % 5 == 0) {
+                    var enemy2 = new Enemy(2);
+                    enemysObj.enemy2.push(enemy2);
+                }
+                if (i % 4 == 0) {
+                    var enemy3 = new Enemy(3);
+                    enemysObj.enemy3.push(enemy3);
+                }
+            }
+            return enemysObj;
+        }
+
+
+        function startGame(plan,enemysObj) {
+            var bulletArray = [];
+            var powerArray = [];
+            for (var i = 0; i < 10; i++) {
+                var bullet = new Bullet(); //创建10个子弹实例
+                bulletArray.push(bullet); //把原型实例添加给数组
+
+                var power = new Power();
+                powerArray.push(power);
+            }
+            var showEnemy = 0;
+            //将子弹库传入敌机原型中
+            Enemy.prototype.bulletArray = bulletArray;
+
+            setInterval(function () {
+
+                showEnemy++;
+
+                elementMove(bulletArray, plan);
+
+                if (showEnemy % 3 == 0) {
+                    //TODO:起飞一架小飞机
+                    elementMove(enemysObj.enemy1)
+                }
+                if(showEnemy % 6 == 0){
+                    //TODO:起飞一架中飞机
+                    elementMove(enemysObj.enemy3)
+                }
+                if(showEnemy % 18 == 0){
+                    showEnemy = 0;
+                    //TODO:起飞一架大飞机
+                    elementMove(enemysObj.enemy2)
+                    //出现一个能量球
+                    elementMove(powerArray);
+                }
+
+
+            }, 300);
+
+            return bulletArray;
+        }
+
+
+
+        function elementMove(Array, plan) {
+            for (var i = 0; i < Array.length; i++) {
+                var eleObj = Array[i];
+                if (eleObj.isFlying === true) {
+                    continue;
+                } else {
+                    //将子弹移到飞机头部
+                    if(plan){
+                        eleObj.power = plan.power;
+                        eleObj.shoot();
+                        eleObj.bullet.style.left = plan.nX - 3 + 'px';
+                        eleObj.bullet.style.top = plan.nY - 54 + 'px';
+                    }else {
+                        eleObj.flyEnemy()
+                    }
+                    break;
+                }
+            }
+        }
+
+
+    </script>
+</head>
+<body>
+</body>
+</html>
